@@ -2,111 +2,63 @@
 <html lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>صفحه اصلی</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: #f5f7fa;
-            font-family: "Vazirmatn", sans-serif;
-            direction: rtl;
-        }
-        .container {
-            max-width: 800px;
-            margin-top: 50px;
-        }
-        h1 {
-            font-weight: 800;
-            color: #333;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        .card {
-            border-radius: 20px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            padding: 25px;
-            background: white;
-        }
-        label {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .toggle-switch input {
-            display: none;
-        }
-        .slider {
-            position: absolute;
-            cursor: pointer;
-            background-color: #ccc;
-            border-radius: 34px;
-            top: 0; left: 0;
-            right: 0; bottom: 0;
-            transition: .4s;
-        }
-        .slider:before {
-            position: absolute;
-            content: "";
-            height: 26px; width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            border-radius: 50%;
-            transition: .4s;
-        }
-        input:checked + .slider {
-            background-color: #4cafef;
-        }
-        input:checked + .slider:before {
-            transform: translateX(26px);
-        }
-        .btn-custom {
-            border-radius: 50px !important;
-            padding: 10px 25px;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        .info-btn {
-            background-color: #17a2b8;
-            border: none;
-            color: white;
-        }
-        .info-btn:hover {
-            background-color: #138496;
-        }
-    </style>
+    <title>Main Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
 </head>
-<body>
+<body class="main-page">
+    <div class="header">
+        <h1 class="ice-title">Winston</h1>
+        <h2 class="ice-subtitle">Config</h2>
+    </div>
 
-<div class="container">
-    <h1>مدیریت تنظیمات</h1>
-    <div class="card">
-        <div class="mb-4">
-            <label>وضعیت سرویس</label>
-            <label class="toggle-switch ms-3">
-                <input type="checkbox" checked>
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="mb-4">
-            <label>حالت شب</label>
-            <label class="toggle-switch ms-3">
+    <div class="menu">
+        <button class="menu-btn" onclick="showSection('panel')">Turn ON Panel</button>
+        <button class="menu-btn" onclick="showSection('info')">Info</button>
+        <a class="menu-btn" href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div id="panel" class="section card hidden">
+        <div class="switch-container">
+            <label class="switch-label">Aim Assist</label>
+            <label class="switch">
                 <input type="checkbox">
                 <span class="slider"></span>
             </label>
         </div>
-        <div class="d-flex gap-3 mt-4">
-            <button class="btn btn-custom info-btn">اطلاعات</button>
-            <button class="btn btn-custom btn-success">ذخیره</button>
-            <button class="btn btn-custom btn-danger">حذف</button>
+        <div class="switch-container">
+            <label class="switch-label">Aim Bot</label>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="switch-container">
+            <label class="switch-label">Aim Lock</label>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="switch-container">
+            <label class="switch-label">Fix Ping</label>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="switch-container">
+            <label class="switch-label">Fix Lag</label>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider"></span>
+            </label>
         </div>
     </div>
-</div>
 
+    <div id="info" class="section card hidden">
+        <p class="info-text">آیدی: @Winstonorg2</p>
+        <p class="info-text">سازنده: taha Winston</p>
+    </div>
 </body>
 </html>
-
