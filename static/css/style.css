@@ -6,6 +6,103 @@
     font-family: 'Vazirmatn', sans-serif;
 }
 
+/* === Login Page Styling === */
+body.login-page {
+    background: radial-gradient(circle at center, #0f2027, #203a43, #2c5364);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background: rgba(0, 0, 0, 0.7);
+    padding: 40px;
+    border-radius: 15px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0, 230, 255, 0.4), 0 0 60px rgba(0, 230, 255, 0.1);
+    animation: fadeInUp 0.6s ease;
+}
+
+/* Title with Typewriter Effect */
+.login-container .title {
+    font-size: 2rem;
+    color: #00e6ff;
+    margin-bottom: 20px;
+    text-shadow: 0 0 15px rgba(0, 230, 255, 0.7);
+    font-weight: bold;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 3px solid #00e6ff;
+    width: 0;
+    animation: typing 2s steps(20, end) forwards,
+               blink-caret 0.7s step-end infinite;
+}
+
+/* Input fields */
+.login-container input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    box-shadow: inset 0 0 10px rgba(0, 230, 255, 0.2);
+    transition: all 0.3s ease;
+}
+.login-container input[type="password"]:focus {
+    box-shadow: 0 0 10px rgba(0, 230, 255, 0.6);
+    background: rgba(0, 230, 255, 0.05);
+}
+
+/* Login Button */
+.login-container button {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(90deg, #00e6ff, #008cff);
+    color: #000;
+    font-weight: bold;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+.login-container button:hover {
+    background: linear-gradient(90deg, #00bcd4, #0052cc);
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px rgba(0, 230, 255, 0.6);
+}
+
+/* Flash Messages */
+.flash-message {
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.4s ease;
+}
+.flash-message.error {
+    background: rgba(255, 0, 0, 0.2);
+    color: #ff4d4d;
+}
+.flash-message.success {
+    background: rgba(0, 255, 150, 0.2);
+    color: #00ff96;
+}
+
+/* Footer */
+.login-container .footer {
+    margin-top: 15px;
+    font-size: 0.85rem;
+    color: #888;
+}
+
+/* === Main Page Styling === */
 body.main-page {
     background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
     color: #fff;
@@ -15,7 +112,7 @@ body.main-page {
     padding: 20px;
 }
 
-/* === Header === */
+/* Header */
 .header {
     text-align: center;
     margin-bottom: 20px;
@@ -31,7 +128,7 @@ body.main-page {
     color: #ccc;
 }
 
-/* === Menu Buttons === */
+/* Menu */
 .menu {
     margin-bottom: 30px;
     display: flex;
@@ -53,7 +150,7 @@ body.main-page {
     transform: translateY(-2px);
 }
 
-/* === Card Sections === */
+/* Card Sections */
 .card {
     background: rgba(255, 255, 255, 0.05);
     padding: 20px;
@@ -64,12 +161,11 @@ body.main-page {
     transition: all 0.4s ease;
 }
 
-/* === Hidden Class === */
 .hidden {
     display: none !important;
 }
 
-/* === Animation for Panel (Slide from right) === */
+/* Animations for Main Sections */
 .section.panel-anim.show {
     opacity: 1;
     transform: translateX(0);
@@ -77,8 +173,6 @@ body.main-page {
 .section.panel-anim {
     transform: translateX(30px);
 }
-
-/* === Animation for Info (Slide from left) === */
 .section.info-anim.show {
     opacity: 1;
     transform: translateX(0);
@@ -87,7 +181,7 @@ body.main-page {
     transform: translateX(-30px);
 }
 
-/* === Switch Styles === */
+/* Switch Styles */
 .switch-container {
     display: flex;
     justify-content: space-between;
@@ -97,8 +191,6 @@ body.main-page {
 .switch-label {
     font-size: 1.1rem;
 }
-
-/* Toggle Switch */
 .switch {
     position: relative;
     display: inline-block;
@@ -136,8 +228,26 @@ input:checked + .slider:before {
     transform: translateX(24px);
 }
 
-/* === Info Text === */
+/* Info Text */
 .info-text {
     margin: 8px 0;
     font-size: 1rem;
+}
+
+/* === Keyframes === */
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes typing {
+    from { width: 0; }
+    to { width: 100%; }
+}
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: #00e6ff; }
 }
