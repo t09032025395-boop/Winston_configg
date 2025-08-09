@@ -2,3 +2,5 @@ flask
 pymongo
 bcrypt
 gunicorn
+python-dotenv
+dnspython
