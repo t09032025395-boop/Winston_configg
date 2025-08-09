@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>Main Panel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="{{ url_for('static', filename='js/script.js') }}" defer></script>
+</head>
+<body class="main-page">
+    <div class="header">
+        <h1 class="ice-title">Winston</h1>
+        <h2 class="ice-subtitle">Config</h2>
+    </div>
+
+    <div class="menu">
+        <button onclick="showSection('panel')">Turn ON Panel</button>
+        <button onclick="showSection('info')">Info</button>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <div id="panel" class="section hidden">
+        <div class="switch-container">
+            <label>Aim Assist</label>
+            <input type="checkbox">
+        </div>
+        <div class="switch-container">
+            <label>Aim Bot</label>
+            <input type="checkbox">
+        </div>
+        <div class="switch-container">
+            <label>Aim Lock</label>
+            <input type="checkbox">
+        </div>
+        <div class="switch-container">
+            <label>Fix Ping</label>
+            <input type="checkbox">
+        </div>
+        <div class="switch-container">
+            <label>Fix Lag</label>
+            <input type="checkbox">
+        </div>
+    </div>
+
+    <div id="info" class="section hidden">
+        <p>آیدی: @Winstonorg2</p>
+        <p>سازنده: taha Winston</p>
+    </div>
+</body>
+</html>
