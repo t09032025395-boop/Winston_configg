@@ -16,14 +16,6 @@ client = MongoClient(MONGO_URI)
 db = client["taha1973"]
 passwords_col = db["Password"]
 
-def get_client_ip():
-    """گرفتن IP واقعی کاربر حتی پشت پروکسی"""
-    if request.headers.get('X-Forwarded-For'):
-        ip = request.headers.get('X-Forwarded-For').split(',')[0]
-    else:
-        ip = request.remote_addr
-    return ip
-
 @app.route("/", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
@@ -35,16 +27,14 @@ def login():
 
         if user:
             device_token = request.cookies.get("device_token")
-            ip_address = get_client_ip()
             owner_token = user.get("device_token")
-            owner_ip = user.get("ip_address")
 
-            # اولین ورود → ذخیره دستگاه و IP
+            # اولین ورود → ذخیره دستگاه
             if not owner_token:
                 new_token = str(uuid.uuid4())
                 passwords_col.update_one(
                     {"_id": user["_id"]},
-                    {"$set": {"device_token": new_token, "ip_address": ip_address}}
+                    {"$set": {"device_token": new_token}}
                 )
                 resp = make_response(redirect(url_for("main_page")))
                 resp.set_cookie("device_token", new_token, max_age=60*60*24*365)  # یک سال
@@ -52,16 +42,11 @@ def login():
                 session["expiry_date"] = user.get("expiry_date")
                 return resp
 
-            # ورود با همون دستگاه و IP
-            elif device_token == owner_token and ip_address == owner_ip:
+            # ورود با همون دستگاه
+            elif device_token == owner_token:
                 session["logged_in"] = True
                 session["expiry_date"] = user.get("expiry_date")
                 return redirect(url_for("main_page"))
-
-            # دستگاه درست ولی IP متفاوت → خطا
-            elif device_token == owner_token and ip_address != owner_ip:
-                flash("ورود از IP متفاوت مجاز نیست", "error")
-                return redirect(url_for("login"))
 
             # دستگاه متفاوت → خطا
             else:
@@ -88,4 +73,3 @@ def logout():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-
