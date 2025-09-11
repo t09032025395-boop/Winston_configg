@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, make_response
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
@@ -27,6 +27,8 @@ def login():
             flash("رمز عبور اشتباه است", "error")
             return redirect(url_for("login"))
 
+        response = make_response(redirect(url_for("main_page")))
+
         # اگر هنوز به دستگاهی قفل نشده → UUID بساز و ذخیره کن
         if not user.get("device_id"):
             new_device_id = str(uuid.uuid4())
@@ -34,13 +36,20 @@ def login():
                 {"_id": user["_id"]},
                 {"$set": {"device_id": new_device_id}}
             )
+            # کوکی persistent بساز
+            response.set_cookie("device_id", new_device_id, max_age=60*60*24*365)  # 1 سال
             flash("ورود موفقیت‌آمیز ✅ (دستگاه ثبت شد)", "success")
-            return redirect(url_for("main_page"))
+            return response
 
-        # اگر device_id قبلاً ثبت شده → ورود فقط برای همان دستگاه
-        # اینجا چون اپ چیزی ذخیره نمی‌کنه، عملاً همیشه دستگاه اول معتبر میشه
-        flash("این رمز قبلاً روی یک دستگاه دیگر استفاده شده ❌", "error")
-        return redirect(url_for("login"))
+        # اگر device_id قبلاً ثبت شده → بررسی کوکی
+        device_id_cookie = request.cookies.get("device_id")
+        if device_id_cookie == user.get("device_id"):
+            # کوکی معتبر است، اجازه ورود
+            flash("ورود موفقیت‌آمیز ✅", "success")
+            return response
+        else:
+            flash("این رمز قبلاً روی یک دستگاه دیگر استفاده شده ❌", "error")
+            return redirect(url_for("login"))
 
     return render_template("login.html")
 
