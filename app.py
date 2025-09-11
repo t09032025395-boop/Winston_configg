@@ -1,8 +1,9 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
 import os
 from dotenv import load_dotenv
 from pymongo import MongoClient
 import uuid
+import hashlib
 
 load_dotenv()
 
@@ -14,6 +15,11 @@ MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client["taha1973"]
 passwords_col = db["Password"]
+
+# --- توابع کمکی ---
+def hash_token(token: str) -> str:
+    """توکن را هش می‌کند"""
+    return hashlib.sha256(token.encode()).hexdigest()
 
 
 # --- مسیر ورود ---
@@ -27,29 +33,31 @@ def login():
             flash("رمز عبور اشتباه است", "error")
             return redirect(url_for("login"))
 
-        response = make_response(redirect(url_for("main_page")))
+        # تولید توکن جدید برای ورود موفق
+        new_token = str(uuid.uuid4())
+        hashed_token = hash_token(new_token)
 
-        # اگر هنوز به دستگاهی قفل نشده → UUID بساز و ذخیره کن
-        if not user.get("device_id"):
-            new_device_id = str(uuid.uuid4())
-            passwords_col.update_one(
-                {"_id": user["_id"]},
-                {"$set": {"device_id": new_device_id}}
-            )
-            # کوکی persistent بساز
-            response.set_cookie("device_id", new_device_id, max_age=60*60*24*365)  # 1 سال
-            flash("ورود موفقیت‌آمیز ✅ (دستگاه ثبت شد)", "success")
-            return response
+        # ذخیره توکن هش شده در دیتابیس → دستگاه قبلی غیرفعال می‌شود
+        passwords_col.update_one(
+            {"_id": user["_id"]},
+            {"$set": {"device_token": hashed_token}}
+        )
 
-        # اگر device_id قبلاً ثبت شده → بررسی کوکی
-        device_id_cookie = request.cookies.get("device_id")
-        if device_id_cookie == user.get("device_id"):
-            # کوکی معتبر است، اجازه ورود
-            flash("ورود موفقیت‌آمیز ✅", "success")
-            return response
-        else:
-            flash("این رمز قبلاً روی یک دستگاه دیگر استفاده شده ❌", "error")
-            return redirect(url_for("login"))
+        # ست کردن کوکی با توکن اصلی
+        resp = make_response(redirect(url_for("main_page")))
+        resp.set_cookie(
+            "device_token",
+            new_token,
+            max_age=60*60*24*365,
+            httponly=True,
+            samesite='Strict'
+        )
+
+        # ست کردن session
+        session["logged_in"] = True
+        session["expiry_date"] = user.get("expiry_date")
+
+        return resp
 
     return render_template("login.html")
 
@@ -57,7 +65,31 @@ def login():
 # --- مسیر اصلی ---
 @app.route("/main")
 def main_page():
-    return render_template("main.html")
+    if not session.get("logged_in"):
+        return redirect(url_for("login"))
+
+    # بررسی device_token کوکی با هش دیتابیس
+    cookie_token = request.cookies.get("device_token")
+    hashed_cookie = hash_token(cookie_token) if cookie_token else None
+
+    user = passwords_col.find_one({"device_token": hashed_cookie})
+    if not user:
+        # توکن معتبر نیست → لوگ‌اوت خودکار
+        session.clear()
+        flash("ورود از دستگاه دیگری انجام شد. شما از سیستم خارج شدید.", "error")
+        return redirect(url_for("login"))
+
+    expiry_date = session.get("expiry_date", "نامشخص")
+    return render_template("main.html", expiry_date=expiry_date)
+
+
+# --- مسیر خروج ---
+@app.route("/logout")
+def logout():
+    session.clear()
+    resp = make_response(redirect(url_for("login")))
+    resp.set_cookie("device_token", "", expires=0)
+    return resp
 
 
 if __name__ == "__main__":
